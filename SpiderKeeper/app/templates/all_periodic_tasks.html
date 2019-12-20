@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content_header %}
+<h1>定时任务区</h1>
+<ol style="float: right;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 12px;
+    padding: 7px 5px;
+    position: absolute;
+    top: 15px;
+    right: 10px;">
+</ol>
+{% endblock %}
+
+{% if job_instance_list %}
+<p>未查询到定时任务</p>
+{% else %}
+{% block content_body %}
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">全部定时任务</h3>
+    </div>
+    <div class="box-body table-responsive">
+        <table class="table table-striped">
+            <tr>
+                <th style="width: 10px">任务id</th>
+                <th style="width: 10px">项目id</th>
+                <th style="width: 40px">爬虫蜘蛛名</th>
+                <th style="width: 30px">月</th>
+                <th style="width: 30px">每月第几天</th>
+                <th style="width: 30px">每周第几天</th>
+                <th style="width: 30px">小时</th>
+                <th style="width: 30px">分钟</th>
+                <th style="width: 40px">优先级</th>
+                <th style="width: 100px">参数</th>
+                <th style="width: 40px">标识</th>
+                <th style="width: 40px">启用状态</th>
+            </tr>
+            {% for job_instance in job_instance_list %}
+            <tr>
+                <td>{{ job_instance.job_instance_id }}</td>
+                <td>{{ job_instance.project_id }}</td>
+                <td>{{ job_instance.spider_name }}</td>
+                <td>{{ job_instance.cron_month }}</td>
+                <td>{{ job_instance.cron_day_of_month }}</td>
+                <td>{{ job_instance.cron_day_of_week }}</td>
+                <td>{{ job_instance.cron_hour }}</td>
+                <td>{{ job_instance.cron_minutes }}</td>
+                {% if job_instance.priority == -1 %}
+                <td>
+                    <span class="label label-default">低</span>
+                </td>
+                {% elif job_instance.priority == 0 %}
+                <td>
+                    <span class="label label-info">正常</span>
+                </td>
+                {% elif job_instance.priority == 1 %}
+                <td>
+                    <span class="label label-warning">高</span>
+                </td>
+                {% elif job_instance.priority == 2 %}
+                <td>
+                    <span class="label label-danger">最高</span>
+                </td>
+                {% endif %}
+                <td class="txt-args" data-toggle="tooltip" data-placement="right"
+                    title="{{ job_instance.spider_arguments }}">{{ job_instance.spider_arguments }}
+                </td>
+                <td>{{ job_instance.tags }}</td>
+                {% if job_instance.enabled %}
+                <td>
+                    <span class="label label-success">允许</span>
+                </td>
+                {% else %}
+                <td>
+                    <span class="label label-danger">禁用</span>
+                </td>
+                {% endif %}
+
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}
+{% endif %}

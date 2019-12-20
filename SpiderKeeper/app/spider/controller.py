@@ -123,6 +123,7 @@ class SpiderDetailCtrl(flask_restful.Resource):
             "paramType": "form",
             "dataType": 'string'
         }])
+
     def put(self, project_id, spider_id):
         spider_instance = SpiderInstance.query.filter_by(project_id=project_id, id=spider_id).first()
         if not spider_instance: abort(404)
@@ -418,6 +419,18 @@ class JobExecutionDetailCtrl(flask_restful.Resource):
             return True
 
 
+
+# class ProjectAll(flask_restful.Resource):
+#     @swagger.operation(
+#         summary='list all projects',
+#         parameters=[])
+#
+#     def get(self):
+#         project = Project.all_project_by_time()
+#         return project
+
+
+# api.add_resource(ProjectAll, "/api/all_projects")
 api.add_resource(ProjectCtrl, "/api/projects")
 api.add_resource(SpiderCtrl, "/api/projects/<project_id>/spiders")
 api.add_resource(SpiderDetailCtrl, "/api/projects/<project_id>/spiders/<spider_id>")
@@ -499,10 +512,29 @@ def index():
     return redirect("/project/manage", code=302)
 
 
+@app.route("/allprojects")
+def project_allprojects():
+
+    project_instance_list = [project_instance.to_dict() for project_instance in
+                         Project.all_project()]
+
+    return render_template("all_projects.html", project_instance_list=project_instance_list)
+
+
+@app.route("/alltasks")
+def project_alltasks():
+
+    job_instance_list = [job_instance.to_dict() for job_instance in
+                         JobInstance.query.filter_by(run_type="periodic").all()]
+
+    return render_template("all_periodic_tasks.html", job_instance_list=job_instance_list)
+
+
 @app.route("/project/<project_id>")
 def project_index(project_id):
     session['project_id'] = project_id
     return redirect("/project/%s/job/dashboard" % project_id, code=302)
+
 
 
 @app.route("/project/create", methods=['post'])
@@ -532,6 +564,8 @@ def project_manage():
 @app.route("/project/<project_id>/job/dashboard")
 def job_dashboard(project_id):
     return render_template("job_dashboard.html", job_status=JobExecution.list_jobs(project_id))
+
+
 
 
 @app.route("/project/<project_id>/job/periodic")
@@ -655,12 +689,14 @@ def spider_egg_upload(project_id):
 @app.route("/project/<project_id>/project/stats")
 def project_stats(project_id):
     project = Project.find_project_by_id(project_id)
-    run_stats = JobExecution.list_run_stats_by_hours(project_id)
+    # run_stats = JobExecution.list_run_stats_by_hours(project_id)
+    run_stats = JobExecution.list_run_stats_by_days(project_id)
     return render_template("project_stats.html", run_stats=run_stats)
 
 
 @app.route("/project/<project_id>/server/stats")
 def service_stats(project_id):
     project = Project.find_project_by_id(project_id)
-    run_stats = JobExecution.list_run_stats_by_hours(project_id)
+    # run_stats = JobExecution.list_run_stats_by_hours(project_id)
+    run_stats = JobExecution.list_run_stats_by_days(project_id)
     return render_template("server_stats.html", run_stats=run_stats)

@@ -20,9 +20,16 @@ class Project(Base):
     def find_project_by_id(cls, project_id):
         return Project.query.filter_by(id=project_id).first()
 
+
+    @classmethod
+    def all_project(cls):
+        return Project.query.filter().all()
+
+
     def to_dict(self):
         return {
             "project_id": self.id,
+            "data_created": self.date_created,
             "project_name": self.project_name
         }
 
@@ -119,6 +126,7 @@ class JobInstance(Base):
     def to_dict(self):
         return dict(
             job_instance_id=self.id,
+            project_id=self.project_id,
             spider_name=self.spider_name,
             tags=self.tags.split(',') if self.tags else None,
             spider_arguments=self.spider_arguments,
@@ -221,3 +229,21 @@ class JobExecution(Base):
             hour_key = job_execution.create_time.strftime('%Y-%m-%d %H:00:00')
             result[hour_key] += 1
         return [dict(key=hour_key, value=result[hour_key]) for hour_key in hour_keys]
+
+    @classmethod
+    def list_run_stats_by_days(cls, project_id):
+        days_num = 30
+        result = {}
+        day_keys = []
+        last_time = datetime.datetime.now() - datetime.timedelta(days=days_num)
+        last_time = datetime.datetime(last_time.year, last_time.month, last_time.day)
+        for hour in range(days_num, -1, -1):
+            time_tmp = datetime.datetime.now() - datetime.timedelta(days=hour)
+            day_key = time_tmp.strftime('%Y-%m-%d')
+            day_keys.append(day_key)
+            result[day_key] = 0  # init
+        for job_execution in JobExecution.query.filter(JobExecution.project_id == project_id,
+                                                       JobExecution.date_created >= last_time).all():
+            day_key = job_execution.create_time.strftime('%Y-%m-%d')
+            result[day_key] += 1
+        return [dict(key=day_key, value=result[day_key]) for day_key in day_keys]

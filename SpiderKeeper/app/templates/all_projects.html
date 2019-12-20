@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content_header %}
+<h1>项目区</h1>
+<ol style="float: right;
+    margin-top: 0;
+    margin-bottom: 0;
+    font-size: 12px;
+    padding: 7px 5px;
+    position: absolute;
+    top: 15px;
+    right: 10px;">
+</ol>
+{% endblock %}
+
+{% if project_instance_list %}
+<p>无项目</p>
+{% else %}
+{% block content_body %}
+<div class="box">
+    <div class="box-header">
+        <h3 class="box-title">全部项目</h3>
+    </div>
+    <div class="box-body table-responsive">
+        <table class="table table-striped">
+            <tr>
+                <th style="width: 10px">项目id</th>
+                <th style="width: 30px">项目名</th>
+                <th style="width: 30px">创建时间</th>
+            </tr>
+            {% for project_instance in project_instance_list %}
+            <tr>
+                <td>{{ project_instance.project_id }}</td>
+                <td>{{ project_instance.project_name }}</td>
+                <td>{{ project_instance.data_created }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}
+{% endif %}
