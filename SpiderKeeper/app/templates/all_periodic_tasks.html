@@ -35,6 +35,7 @@
                 <th style="width: 100px">参数</th>
                 <th style="width: 40px">标识</th>
                 <th style="width: 40px">启用状态</th>
+                <th style="width: 100px">操作</th>
             </tr>
             {% for job_instance in job_instance_list %}
             <tr>
@@ -76,6 +77,10 @@
                     <span class="label label-danger">禁用</span>
                 </td>
                 {% endif %}
+                <td>
+                    <a href="/project/{{ job_instance.project_id }}/job/{{ job_instance.job_instance_id }}/run"><span
+                            class="label label-info">运行</span></a>
+                </td>
 
             </tr>
             {% endfor %}
