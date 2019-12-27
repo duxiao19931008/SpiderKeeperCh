@@ -56,13 +56,13 @@
                        style="padding-top: 15px;padding-bottom: 15px;">
                         <span>项目</span>
                     </a>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu" style="height:400px;overflow-y:scroll;">
+						<li><a href="#" data-toggle="modal" data-target="#project-create-modal">新建项目</a>
+                        </li>
+						<li role="separator" class="divider"></li>
                         {% for project in project_list %}
                         <li><a href="/project/{{ project.id }}">{{ project.project_name }}</a></li>
                         {% endfor %}
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#" data-toggle="modal" data-target="#project-create-modal">新建项目</a>
-                        </li>
                     </ul>
                 </li>
                 <li class="dropdown" style="float: left;">
